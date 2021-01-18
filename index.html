@@ -7,114 +7,114 @@
 <body>
 <canvas id="canvas" width="400" height="500"></canvas>
 <script>
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const world = {
-    width: canvas.offsetWidth,
-    height: canvas.offsetHeight,
-    speed: 1,
-    maxSpeed: 3,
-    score: 0,
-    topScore: 0,
-    timer: 0,
-    sky: new Image(),
-    draw() {
-    ctx.fillStyle = 'lightblue';
-    ctx.fillRect(0, 0, world.width, world.height);
-    ctx.drawImage(this.sky, world.width - ((this.timer + 55000) * 0.02 % (world.width + this.sky.width)), 140, this.sky.width / 2, this.sky.height / 2);
-    ctx.drawImage(this.sky, world.width - ((this.timer + 5000) * 0.05 % (world.width + this.sky.width)), 100);
-    },
-    drawScore() {
-      ctx.fillStyle = 'white';
-      ctx.font = '18px Arial';
-      ctx.fillText(`Score: ${this.score}`, 15, 30);
-      ctx.fillText(`Top score: ${this.topScore}`, 15, 50);
-    },
-    drawGameOver() {
-      ctx.font = '40px Arial';
-      ctx.fillText('Game over!', 100, world.height / 2);
-    },
-  };
-  world.sky.src = './sky.png';
-  const bird = {
-    x: 50,
-    y: world.height / 2 - 40,
-    width: 40,
-    height: 48,
-    gravity: 0,
-    img: new Image(this.width, this.height),
-    draw() {
-      ctx.translate(this.x, this.y);
-      ctx.rotate(0.05 * this.gravity);
-      ctx.drawImage(this.img, 0, 0, this.width, this.height);
-      ctx.rotate(-0.05 * this.gravity);
-      ctx.translate(-this.x, -this.y);
-    },
-    fly() {
-      this.gravity = this.gravity = -5.5;
-    },
-  };
-  bird.img.src = './bird.png';
-  const tubes = [new Tube(world.width), new Tube(world.width + 230)];
-  window.onkeydown = () => {
-    if (world.speed === 0) world.speed = 1;
-    bird.fly();
-  };
-  function Tube(x) {
-    this.x = x;
-    this.y = 0;
-    this.width = 64;
-    this.height = 150;
-    this.distance = 150;
-    this.img = new Image();
-    this.img.src = './tube.png';
-    this.draw = () => {
-      ctx.drawImage(this.img, this.x, this.y - world.height + this.height, this.width, this.img.height);
-      ctx.drawImage(this.img, this.x, this.y + this.height + this.distance, this.width, this.img.height);
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const world = {
+  width: canvas.offsetWidth,
+  height: canvas.offsetHeight,
+  speed: 1,
+  maxSpeed: 3,
+  score: 0,
+  topScore: 0,
+  timer: 0,
+  sky: new Image(),
+  draw() {
+  ctx.fillStyle = 'lightblue';
+  ctx.fillRect(0, 0, world.width, world.height);
+  ctx.drawImage(this.sky, world.width - ((this.timer + 55000) * 0.02 % (world.width + this.sky.width)), 140, this.sky.width / 2, this.sky.height / 2);
+  ctx.drawImage(this.sky, world.width - ((this.timer + 5000) * 0.05 % (world.width + this.sky.width)), 100);
+  },
+  drawScore() {
+    ctx.fillStyle = 'white';
+    ctx.font = '18px Arial';
+    ctx.fillText(`Score: ${this.score}`, 15, 30);
+    ctx.fillText(`Top score: ${this.topScore}`, 15, 50);
+  },
+  drawGameOver() {
+    ctx.font = '40px Arial';
+    ctx.fillText('Game over!', 100, world.height / 2);
+  },
+};
+world.sky.src = './sky.png';
+const bird = {
+  x: 50,
+  y: world.height / 2 - 40,
+  width: 40,
+  height: 48,
+  gravity: 0,
+  img: new Image(this.width, this.height),
+  draw() {
+    ctx.translate(this.x, this.y);
+    ctx.rotate(0.05 * this.gravity);
+    ctx.drawImage(this.img, 0, 0, this.width, this.height);
+    ctx.rotate(-0.05 * this.gravity);
+    ctx.translate(-this.x, -this.y);
+  },
+  fly() {
+    this.gravity = this.gravity = -5.5;
+  },
+};
+bird.img.src = './bird.png';
+const tubes = [new Tube(world.width), new Tube(world.width + 230)];
+window.onkeydown = () => {
+  if (world.speed === 0) world.speed = 1;
+  bird.fly();
+};
+function Tube(x) {
+  this.x = x;
+  this.y = 0;
+  this.width = 64;
+  this.height = 150;
+  this.distance = 150;
+  this.img = new Image();
+  this.img.src = './tube.png';
+  this.draw = () => {
+    ctx.drawImage(this.img, this.x, this.y - world.height + this.height, this.width, this.img.height);
+    ctx.drawImage(this.img, this.x, this.y + this.height + this.distance, this.width, this.img.height);
+  }
+}
+function reset() {
+  bird.y = world.height / 2;
+  bird.gravity = 1;
+  world.speed = 0;
+  world.timer = 0;
+  world.topScore = Math.max(world.score, world.topScore);
+  world.score = 0;
+  tubes.forEach(tube => {
+    tube.x = tube.x + world.width / 4
+  })
+}
+const frameTime = 1000 / 60;
+function render() {
+  if (world.speed) {
+    bird.y = bird.y + bird.gravity;
+    bird.gravity = bird.gravity + 2 * 9.8/1000 * frameTime;
+    world.timer += frameTime;
+  }
+  world.draw();
+  bird.draw();
+  tubes.forEach(tube => {
+    tube.x = tube.x - world.speed / 10 * frameTime;
+    tube.draw();
+    const isTubeOutOfScreen = tube.x + tube.width < 0;
+    if (isTubeOutOfScreen) {
+      tube.x = world.width;
+      tube.height = Math.random() * 250 + 50;
+      world.speed = Math.min(world.speed + .1, world.maxSpeed);
+      world.score = world.score + 1
     }
-  }
-  function reset() {
-    bird.y = world.height / 2;
-    bird.gravity = 1;
-    world.speed = 0;
-    world.timer = 0;
-    world.topScore = Math.max(world.score, world.topScore);
-    world.score = 0;
-    tubes.forEach(tube => {
-      tube.x = tube.x + world.width / 4
-    })
-  }
-  const frameTime = 1000 / 60;
-  function render() {
-    if (world.speed) {
-      bird.y = bird.y + bird.gravity;
-      bird.gravity = bird.gravity + 2 * 9.8/1000 * frameTime;
-      world.timer += frameTime;
+    const isTubeReachBird = (tube.x < bird.x + bird.width) && (tube.x + tube.width > bird.x);
+    if (isTubeReachBird) {
+      const isTubeHitBird = tube.height > bird.y || bird.y + bird.height > tube.height + tube.distance;
+      if (isTubeHitBird) reset()
     }
-    world.draw();
-    bird.draw();
-    tubes.forEach(tube => {
-      tube.x = tube.x - world.speed / 10 * frameTime;
-      tube.draw();
-      const isTubeOutOfScreen = tube.x + tube.width < 0;
-      if (isTubeOutOfScreen) {
-        tube.x = world.width;
-        tube.height = Math.random() * 250 + 50;
-        world.speed = Math.min(world.speed + .1, world.maxSpeed);
-        world.score = world.score + 1
-      }
-      const isTubeReachBird = (tube.x < bird.x + bird.width) && (tube.x + tube.width > bird.x);
-      if (isTubeReachBird) {
-        const isTubeHitBird = tube.height > bird.y || bird.y + bird.height > tube.height + tube.distance;
-        if (isTubeHitBird) reset()
-      }
-    });
-    world.drawScore();
-    const isBirdOutOfScreen = bird.y > world.height || bird.y < 0;
-    if (isBirdOutOfScreen) reset();
-    if (!world.speed) world.drawGameOver()
-  }
-  setInterval(render, frameTime)
+  });
+  world.drawScore();
+  const isBirdOutOfScreen = bird.y > world.height || bird.y < 0;
+  if (isBirdOutOfScreen) reset();
+  if (!world.speed) world.drawGameOver()
+}
+setInterval(render, frameTime);
 </script>
 </body>
 </html>
