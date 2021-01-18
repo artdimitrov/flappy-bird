@@ -3,12 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <title>Flappy</title>
+  <style>
+    body { background-color: #292929; }
+    button { display: block; margin: 0 auto; padding: 10px; border: none; background-color: aliceblue }
+    canvas { display: block; margin: 100px auto 20px; }
+  </style>
 </head>
 <body>
 <canvas id="canvas" width="750" height="500"></canvas>
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+
+const S_POINT = new Audio();
+S_POINT.src = './audio/bird-point.wav';
+const S_FLAP = new Audio();
+S_FLAP.src = './audio/bird-flap.wav';
+const S_DIE = new Audio();
+S_DIE.src = './audio/bird-die.wav';
+const S_HIT = new Audio();
+S_HIT.src = './audio/bird-hit.wav';
+
 const world = {
   width: canvas.offsetWidth,
   height: canvas.offsetHeight,
@@ -39,7 +54,7 @@ const world = {
     world.isDemoMode = false;
   },
 };
-world.sky.src = './sky.png';
+world.sky.src = './img/sky.png';
 const bird = {
   x: 50,
   y: world.height / 2 - 40,
@@ -55,10 +70,11 @@ const bird = {
     ctx.translate(-this.x, -this.y);
   },
   fly() {
+    S_FLAP.play();
     this.gravity = this.gravity = -4.5;
   },
 };
-bird.img.src = './tema.png';
+bird.img.src = './img/tema.png';
 const tubes = [new Tube(world.width ), new Tube(world.width * 1.25), new Tube(world.width * 1.5), new Tube(world.width * 1.75)];
 window.onkeydown = () => {
   if (world.speed === 0) world.speed = 1;
@@ -75,7 +91,7 @@ function Tube(x) {
   this.height = 150;
   this.distance = 200;
   this.img = new Image();
-  this.img.src = './tube.png';
+  this.img.src = './img/tube.png';
   this.draw = () => {
     ctx.drawImage(this.img, this.x, this.y - this.img.height + this.height, this.width, this.img.height);
     ctx.drawImage(this.img, this.x, this.y + this.height + this.distance, this.width, this.img.height);
@@ -110,11 +126,15 @@ function render() {
       tube.height = Math.random() * 250 + 50;
       world.speed = Math.min(world.speed + .1, world.maxSpeed);
       world.score = world.score + 1
+      S_POINT.play();
     }
     const isTubeReachBird = (tube.x < bird.x + bird.width) && (tube.x + tube.width > bird.x);
     if (isTubeReachBird) {
       const isTubeHitBird = tube.height > bird.y || bird.y + bird.height > tube.height + tube.distance;
-      if (isTubeHitBird) reset()
+      if (isTubeHitBird) {
+        S_HIT.play();
+        reset()
+      }
     }
   });
   if (world.isDemoMode) {
@@ -131,7 +151,10 @@ function render() {
   }
   world.drawScore();
   const isBirdOutOfScreen = bird.y > world.height || bird.y < 0;
-  if (isBirdOutOfScreen) reset();
+  if (isBirdOutOfScreen) {
+    S_DIE.play();
+    reset();
+  }
   if (!world.speed) world.drawGameOver()
 }
 setInterval(render, frameTime);
