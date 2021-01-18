@@ -28,7 +28,7 @@ const world = {
   width: canvas.offsetWidth,
   height: canvas.offsetHeight,
   speed: 1,
-  maxSpeed: 3,
+  maxSpeed: 2,
   score: 0,
   topScore: 0,
   timer: 0,
@@ -64,9 +64,9 @@ const bird = {
   img: new Image(this.width, this.height),
   draw() {
     ctx.translate(this.x, this.y);
-    ctx.rotate(0.05 * this.gravity);
+    ctx.rotate(0.02 * this.gravity);
     ctx.drawImage(this.img, 0, 0, this.width, this.height);
-    ctx.rotate(-0.05 * this.gravity);
+    ctx.rotate(-0.02 * this.gravity);
     ctx.translate(-this.x, -this.y);
   },
   fly() {
@@ -128,7 +128,7 @@ function render() {
       world.score = world.score + 1
       S_POINT.play();
     }
-    const isTubeReachBird = (tube.x < bird.x + bird.width) && (tube.x + tube.width > bird.x);
+    const isTubeReachBird = (tube.x < bird.x + bird.width / 2) && (tube.x + tube.width > bird.x);
     if (isTubeReachBird) {
       const isTubeHitBird = tube.height > bird.y || bird.y + bird.height > tube.height + tube.distance;
       if (isTubeHitBird) {
@@ -143,10 +143,10 @@ function render() {
     if (isNeedFly) bird.fly();
     /*
     // only for debug
-    ctx.beginPath();
-    ctx.moveTo(0, nearTube.height + nearTube.distance);
-    ctx.lineTo(nearTube.x, nearTube.height + nearTube.distance);
-    ctx.stroke();
+    // ctx.beginPath();
+    // ctx.moveTo(0, nearTube.height + nearTube.distance);
+    // ctx.lineTo(nearTube.x, nearTube.height + nearTube.distance);
+    // ctx.stroke();
      */
   }
   world.drawScore();
