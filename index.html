@@ -5,7 +5,7 @@
   <title>Flappy</title>
 </head>
 <body>
-<canvas id="canvas" width="400" height="500"></canvas>
+<canvas id="canvas" width="750" height="500"></canvas>
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -18,6 +18,7 @@ const world = {
   topScore: 0,
   timer: 0,
   sky: new Image(),
+  isDemoMode: false,
   draw() {
   ctx.fillStyle = 'lightblue';
   ctx.fillRect(0, 0, world.width, world.height);
@@ -29,10 +30,13 @@ const world = {
     ctx.font = '18px Arial';
     ctx.fillText(`Score: ${this.score}`, 15, 30);
     ctx.fillText(`Top score: ${this.topScore}`, 15, 50);
+    ctx.fillText(`Time: ${Math.round(this.timer/1000)} s`, 15, 70);
+    if (world.isDemoMode) ctx.fillText(`Demo mode`, 15, 90);
   },
   drawGameOver() {
     ctx.font = '40px Arial';
     ctx.fillText('Game over!', 100, world.height / 2);
+    world.isDemoMode = false;
   },
 };
 world.sky.src = './sky.png';
@@ -55,9 +59,13 @@ const bird = {
   },
 };
 bird.img.src = './bird.png';
-const tubes = [new Tube(world.width), new Tube(world.width + 230)];
+const tubes = [new Tube(world.width ), new Tube(world.width * 1.25), new Tube(world.width * 1.5), new Tube(world.width * 1.75)];
 window.onkeydown = () => {
   if (world.speed === 0) world.speed = 1;
+  if (world.isDemoMode) {
+    reset();
+  }
+  world.isDemoMode = false;
   bird.fly();
 };
 function Tube(x) {
@@ -65,11 +73,11 @@ function Tube(x) {
   this.y = 0;
   this.width = 64;
   this.height = 150;
-  this.distance = 150;
+  this.distance = 200;
   this.img = new Image();
   this.img.src = './tube.png';
   this.draw = () => {
-    ctx.drawImage(this.img, this.x, this.y - world.height + this.height, this.width, this.img.height);
+    ctx.drawImage(this.img, this.x, this.y - this.img.height + this.height, this.width, this.img.height);
     ctx.drawImage(this.img, this.x, this.y + this.height + this.distance, this.width, this.img.height);
   }
 }
@@ -78,7 +86,7 @@ function reset() {
   bird.gravity = 1;
   world.speed = 0;
   world.timer = 0;
-  world.topScore = Math.max(world.score, world.topScore);
+  world.topScore = world.isDemoMode ? world.topScore : Math.max(world.score, world.topScore);
   world.score = 0;
   tubes.forEach(tube => {
     tube.x = tube.x + world.width / 4
@@ -88,7 +96,7 @@ const frameTime = 1000 / 60;
 function render() {
   if (world.speed) {
     bird.y = bird.y + bird.gravity;
-    bird.gravity = bird.gravity + 2 * 9.8/1000 * frameTime;
+    bird.gravity = bird.gravity + 2.5 * 9.8/1000 * frameTime;
     world.timer += frameTime;
   }
   world.draw();
@@ -109,6 +117,18 @@ function render() {
       if (isTubeHitBird) reset()
     }
   });
+  if (world.isDemoMode) {
+    const nearTube = tubes.filter(tube => tube.x + tube.width > bird.x).sort((a, b) => a.x > b.x ? 1 : -1)[0];
+    let isNeedFly = bird.y + bird.height + 20 > nearTube.height + nearTube.distance;
+    if (isNeedFly) bird.fly();
+    /*
+    // only for debug
+    ctx.beginPath();
+    ctx.moveTo(0, nearTube.height + nearTube.distance);
+    ctx.lineTo(nearTube.x, nearTube.height + nearTube.distance);
+    ctx.stroke();
+     */
+  }
   world.drawScore();
   const isBirdOutOfScreen = bird.y > world.height || bird.y < 0;
   if (isBirdOutOfScreen) reset();
@@ -116,5 +136,6 @@ function render() {
 }
 setInterval(render, frameTime);
 </script>
+<br/><button onclick="world.isDemoMode = true; world.speed = 1; this.blur();">Demo mode</button>
 </body>
 </html>
