@@ -43,8 +43,8 @@ world.sky.src = './sky.png';
 const bird = {
   x: 50,
   y: world.height / 2 - 40,
-  width: 40,
-  height: 48,
+  width: 60,
+  height: 65,
   gravity: 0,
   img: new Image(this.width, this.height),
   draw() {
@@ -55,10 +55,10 @@ const bird = {
     ctx.translate(-this.x, -this.y);
   },
   fly() {
-    this.gravity = this.gravity = -5.5;
+    this.gravity = this.gravity = -4.5;
   },
 };
-bird.img.src = './bird.png';
+bird.img.src = './tema.png';
 const tubes = [new Tube(world.width ), new Tube(world.width * 1.25), new Tube(world.width * 1.5), new Tube(world.width * 1.75)];
 window.onkeydown = () => {
   if (world.speed === 0) world.speed = 1;
@@ -96,7 +96,7 @@ const frameTime = 1000 / 60;
 function render() {
   if (world.speed) {
     bird.y = bird.y + bird.gravity;
-    bird.gravity = bird.gravity + 2.5 * 9.8/1000 * frameTime;
+    bird.gravity = bird.gravity + 1.5 * 9.8/1000 * frameTime;
     world.timer += frameTime;
   }
   world.draw();
