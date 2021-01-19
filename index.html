@@ -137,7 +137,7 @@ function render() {
       world.score = world.score + 1;
       const isNextLevel = world.score % 10 === 0;
       if (isNextLevel) S_POINT.play();
-      if (world.score % 50 === 0) {
+      if (world.score % 30 === 0) {
         bird.resist = true;
         bird.img.src = './img/resistBird.png';
       }
