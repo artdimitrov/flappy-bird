@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Flappy</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=0.5;maximum-scale=0.5;user-scalable=no;">
   <style>
     body { background-color: #292929; }
     button { display: block; margin: 0 auto; padding: 10px; border: none; background-color: aliceblue }
@@ -85,7 +85,7 @@ const bird = {
 };
 bird.img.src = './img/tema.png';
 const tubes = [new Tube(world.width ), new Tube(world.width * 1.25), new Tube(world.width * 1.5), new Tube(world.width * 1.75)];
-window.onkeydown = () => {
+function fly() {
   if (world.speed === 0) world.speed = 1;
   if (world.isDemoMode) {
     reset();
@@ -93,6 +93,8 @@ window.onkeydown = () => {
   world.isDemoMode = false;
   bird.fly();
 };
+document.addEventListener('touchstart', fly);
+document.addEventListener('keydown', fly);
 function Tube(x) {
   this.x = x;
   this.y = 0;
