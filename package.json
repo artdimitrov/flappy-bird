@@ -1,0 +1,22 @@
+{
+  "name": "flappy-bird",
+  "version": "1.0.0",
+  "description": "Flappy Bird in Vanilla JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gh-pages -d src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artdimitrov/flappy-bird.git"
+  },
+  "author": "Artem Dimitrov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/artdimitrov/flappy-bird/issues"
+  },
+  "homepage": "https://github.com/artdimitrov/flappy-bird#readme",
+  "devDependencies": {
+    "gh-pages": "^3.1.0"
+  }
+}
