@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/img/tema.png" width="300" height="300" alt="Logo">
+  <img src="src/img/tema.png" width="300" height="300" alt="Logo">
 </p>
 
 # Flappy-Bird
