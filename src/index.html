@@ -50,10 +50,7 @@ const world = {
     ctx.font = '18px Arial';
     ctx.fillText(`Score: ${this.score}`, 15, 30);
     ctx.fillText(`Top score: ${this.topScore}`, 15, 50);
-    // TODO: looks like it's not important
-    // ctx.fillText(`Time: ${Math.round(this.timer/1000)} s`, 15, 70);
     if (world.isDemoMode) ctx.fillText(`Demo mode`, 15, 90);
-    if (bird.resist) ctx.fillText(`resist mode!`, world.width / 2, world.height - 50);
   },
   drawGameOver() {
     ctx.font = '60px Arial';
@@ -115,6 +112,7 @@ function reset() {
   world.timer = 0;
   world.topScore = world.isDemoMode ? world.topScore : Math.max(world.score, world.topScore);
   world.score = 0;
+  bird.img.src = './img/tema.png';
   tubes.forEach(tube => {
     tube.x = tube.x + world.width / 4
   })
@@ -139,17 +137,21 @@ function render() {
       world.score = world.score + 1;
       const isNextLevel = world.score % 10 === 0;
       if (isNextLevel) S_POINT.play();
-      // TODO: should we add the resistance mode every 50 tubes?
-      if (world.score % 50 === 0) bird.resist = true;
+      if (world.score % 50 === 0) {
+        bird.resist = true;
+        bird.img.src = './img/resistBird.png';
+      }
     }
     const isTubeReachBird = (tube.x < bird.x + bird.width / 2) && (tube.x + tube.width > bird.x);
     if (isTubeReachBird) {
       const isTubeHitBird = tube.height > bird.y || bird.y + bird.height > tube.height + tube.distance;
       if (isTubeHitBird) {
         S_HIT.play();
-        // TODO: should we add a 'resist feature'?
         if (!bird.resist) reset()
-        setTimeout(() => bird.resist = false, 1000)
+        bird.img.src = './img/tema.png';
+        setTimeout(() => {
+          bird.resist = false;
+        }, 1000)
       }
     }
   });
